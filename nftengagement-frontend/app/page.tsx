@@ -1,12 +1,12 @@
 "use client";
 
-import { Button } from "@/component/ui/button";
 import { PeraWalletConnect } from "@perawallet/connect";
 import { motion } from "framer-motion";
 import { Wallet, Play } from "lucide-react";
 import { useState } from "react";
 import { Bounce, toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 
 
 export default function PeraConnect() {
@@ -102,7 +102,7 @@ export default function PeraConnect() {
             <Button
               onClick={handleConnectWallet}
               variant="default"
-              className="bg-purple-600 hover:bg-purple-700 text-white text-lg px-6 py-4 rounded-full flex items-center gap-2"
+              className="bg-purple-600 hover:bg-purple-400 text-white text-lg px-6 py-4 rounded-2xl flex items-center gap-2"
             >
               <Wallet size={20} /> Connect Pera Wallet
             </Button>
@@ -122,11 +122,11 @@ export default function PeraConnect() {
             animate={{ y: [0, -10, 0] }}
             transition={{ duration: 5, repeat: Infinity }}
           >
-            <button className="w-14 h-14 bg-white/20 border border-white/30 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:scale-110 transition">
+            <Button className="w-14 h-14 bg-white/20 border border-white/30 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:scale-110 transition">
               <Play size={28}
 
               />
-            </button>
+            </Button>
 
           </motion.div>
         </div>

@@ -9,6 +9,8 @@ const FormData = require('form-data');
 const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
+const mongoose = require("mongoose"); 
+
 
 
 
@@ -222,7 +224,7 @@ router.post("/reply", async (req, res) => {
     const io = req.io;
     // io.to(original.nftId).emit("newMessage", reply); // for reply route
     console.log("Emitting reply to room:", original.nftId.toString(), reply);
-io.to(original.nftId.toString()).emit("newMessage", reply);
+    io.to(original.nftId.toString()).emit("newMessage", reply);
 
 
 
@@ -253,6 +255,45 @@ router.get("/chat/:nftId", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
+// Get all questions for NFTs owned by a specific owner
+router.get("/questions/owner/:ownerAddress", async (req, res) => {
+  try {
+    const { ownerAddress } = req.params;
+
+    const questions = await QuestionAnswer.find({
+      ownerAddress,
+      isSellerResponse: false, // only questions, not replies
+    })
+      .populate("nftId", "name url assetId") // optional: populate NFT info
+      .sort({ sentAt: -1 });
+
+    res.json(questions);
+  } catch (error) {
+    console.error("Error fetching owner questions:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.get("/:nftId/buyers", async (req, res) => {
+  try {
+    const { nftId } = req.params;
+
+    const buyers = await QuestionAnswer.aggregate([
+      { $match: { nftId: new mongoose.Types.ObjectId(nftId) } },
+      { $group: { _id: "$askerAddress" } }
+    ]);
+
+    res.json(buyers.map(b => b._id)); // ✅ send array of wallet addresses
+  } catch (err) {
+    console.error("Failed to fetch buyers", err);
+    res.status(500).json({ error: "Failed to fetch buyers" });
+  }
+});
+
+
+
+
 
 module.exports = router;
 
